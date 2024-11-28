@@ -1,4 +1,4 @@
-package com.ag.projects.data.model
+package com.ag.projects.data.model.prayer_times
 
 import com.google.gson.annotations.SerializedName
 

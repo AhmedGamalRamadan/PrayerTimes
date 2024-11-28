@@ -1,4 +1,4 @@
-package com.ag.projects.data.model
+package com.ag.projects.data.model.prayer_times
 
 data class Hijri(
     val date: String,

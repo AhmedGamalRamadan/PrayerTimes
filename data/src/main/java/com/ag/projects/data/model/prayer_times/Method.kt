@@ -1,4 +1,4 @@
-package com.ag.projects.data.model
+package com.ag.projects.data.model.prayer_times
 
 data class Method(
     val id: Int,
