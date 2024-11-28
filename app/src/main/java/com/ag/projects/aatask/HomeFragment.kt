@@ -1,11 +1,11 @@
 package com.ag.projects.aatask
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.gms.location.LocationServices
+import androidx.fragment.app.Fragment
 
 class HomeFragment : Fragment() {
 
@@ -22,4 +22,6 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
     }
+
+
 }
