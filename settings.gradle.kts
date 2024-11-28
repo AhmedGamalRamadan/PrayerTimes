@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "AATask"
 include(":app")
+include(":data")
