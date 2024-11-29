@@ -12,4 +12,5 @@
     <string name="isha">Isha</string>
     <string name="your_location">Your Location</string>
     <string name="go_to_qibla">Go To Qibla</string>
+    <string name="can_not_get_direction">can not get direction</string>
 </resources>

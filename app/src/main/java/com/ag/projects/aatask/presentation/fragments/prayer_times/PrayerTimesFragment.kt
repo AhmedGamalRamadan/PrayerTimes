@@ -19,6 +19,9 @@ import com.ag.projects.aatask.R
 import com.ag.projects.aatask.databinding.FragmentPrayerTimesBinding
 import com.ag.projects.aatask.presentation.adapter.PrayerTimesAdapter
 import com.ag.projects.aatask.util.Result
+import com.ag.projects.aatask.util.helper.getAddressFromLatLng
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -33,7 +36,10 @@ class PrayerTimesFragment : Fragment() {
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<Array<String>>
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var currentPosition = 0
+    private var latitude = 0.0
+    private var longitude = 0.0
 
     private val prayerTimesAdapter by lazy {
         PrayerTimesAdapter()
@@ -49,6 +55,7 @@ class PrayerTimesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         initBinding()
         checkLocationPermission()
 
@@ -69,13 +76,13 @@ class PrayerTimesFragment : Fragment() {
 
             btnNextTimes.setOnClickListener {
                 currentPosition++
-                rvPrayerTimes.scrollToPosition(currentPosition)
+                rvPrayerTimes.smoothScrollToPosition(currentPosition)
             }
 
             btnPreviousTimes.setOnClickListener {
                 if (currentPosition > 0) {
                     currentPosition--
-                    rvPrayerTimes.scrollToPosition(currentPosition)
+                    rvPrayerTimes.smoothScrollToPosition(currentPosition)
                 }
             }
         }
@@ -101,7 +108,8 @@ class PrayerTimesFragment : Fragment() {
                         getString(R.string.location_permission_granted),
                         Toast.LENGTH_SHORT
                     ).show()
-                    getPrayerTimes()
+//                    getPrayerTimes()
+                    getUserLocation()
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -112,7 +120,8 @@ class PrayerTimesFragment : Fragment() {
             }
 
         if (isLocationPermissionGranted()) {
-            getPrayerTimes()
+//            getPrayerTimes()
+            getUserLocation()
         } else {
             requestPermissionLauncher.launch(
                 arrayOf(
@@ -133,7 +142,38 @@ class PrayerTimesFragment : Fragment() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun getUserLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                latitude = location.latitude
+                longitude = location.longitude
+
+                val userLocation =
+                    getAddressFromLatLng(
+                        requireContext(),
+                        location.latitude,
+                        location.longitude
+                    )
+
+                binding.tvUserLocation.text = userLocation
+            }
+            getPrayerTimes()
+        }
+    }
+
     private fun getPrayerTimes() {
+
 
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -142,8 +182,8 @@ class PrayerTimesFragment : Fragment() {
         viewModel.getPrayerTimes(
             year = year,
             month = month,
-            latitude = 51.508515,
-            longitude = 51.508515
+            latitude = latitude,
+            longitude = longitude
         )
         observePrayerTimes()
     }
@@ -157,9 +197,13 @@ class PrayerTimesFragment : Fragment() {
                     is Result.Success -> {
                         prayerTimesAdapter.syncListDiffer.submitList(prayerTimesResponse.data.data)
                         Log.d("the data is ", "${prayerTimesResponse.data.data}")
+                        prayerTimesResponse.data.data.map {
+                            binding.tvDate.text = it.date.readable
+                        }
                     }
                 }
             }
+
         }
     }
 

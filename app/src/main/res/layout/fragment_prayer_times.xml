@@ -12,7 +12,7 @@
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_margin="12dp"
-        android:background="@color/dark_blue"
+        android:background="@null"
         android:padding="8dp"
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,11 +23,37 @@
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_margin="12dp"
-        android:background="@color/dark_blue"
+        android:background="@null"
         android:padding="8dp"
         android:src="@drawable/ic_next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvDate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/quick_sand_bold"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toStartOf="@+id/btnNextTimes"
+        app:layout_constraintStart_toEndOf="@+id/btnPreviousTimes"
+        app:layout_constraintTop_toBottomOf="@+id/btnPreviousTimes"
+        tools:text="DEC 12 2024" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvUserLocation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/quick_sand_bold"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toStartOf="@+id/btnNextTimes"
+        app:layout_constraintStart_toEndOf="@+id/btnPreviousTimes"
+        app:layout_constraintTop_toBottomOf="@+id/tvDate"
+        tools:text="CAIRO EGYPT" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPrayerTimes"
@@ -37,7 +63,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnNextTimes" />
+        app:layout_constraintTop_toBottomOf="@+id/tvUserLocation" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnNavigateToQibla"

@@ -1,7 +1,10 @@
 package com.ag.projects.aatask.presentation.fragments.qibla
 
+import android.annotation.SuppressLint
 import android.content.Context.SENSOR_SERVICE
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -11,24 +14,37 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.ag.projects.aatask.R
 import com.ag.projects.aatask.databinding.FragmentQiblaBinding
+import com.ag.projects.aatask.util.Result
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class QiblaFragment : Fragment() , OnMapReadyCallback, SensorEventListener {
+class QiblaFragment : Fragment(), OnMapReadyCallback, SensorEventListener {
 
-    private lateinit var binding:FragmentQiblaBinding
+    private lateinit var binding: FragmentQiblaBinding
+
+    private val viewModel: QiblaFragmentViewModel by viewModels()
+
+    private var qiblaLatLng: LatLng? = null
 
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -43,7 +59,7 @@ class QiblaFragment : Fragment() , OnMapReadyCallback, SensorEventListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding  =FragmentQiblaBinding.inflate(layoutInflater,container,false)
+        binding = FragmentQiblaBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -75,7 +91,9 @@ class QiblaFragment : Fragment() , OnMapReadyCallback, SensorEventListener {
         map.isMyLocationEnabled = true
 
         getUserLocation()
+        getQiblaLocation()
     }
+
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event == null) return
@@ -96,9 +114,9 @@ class QiblaFragment : Fragment() , OnMapReadyCallback, SensorEventListener {
             val R = FloatArray(9)
             val I = FloatArray(9)
 
-            Log.d("SensorEvent", "enter if statement")
+//            Log.d("SensorEvent", "enter if statement")
 
-            Log.d("SensorEvent", "enter if rotation matrix")
+//            Log.d("SensorEvent", "enter if rotation matrix")
 
             val rotationMatrixSuccess = SensorManager.getRotationMatrix(R, I, gravity, geomagnetic)
 
@@ -124,6 +142,7 @@ class QiblaFragment : Fragment() , OnMapReadyCallback, SensorEventListener {
             Log.d("SensorEvent", "Gravity or Geomagnetic data is null")
         }
     }
+
     private fun updateDirection(azimuth: Float) {
         binding.ivDirection.rotation = azimuth
     }
@@ -144,16 +163,78 @@ class QiblaFragment : Fragment() , OnMapReadyCallback, SensorEventListener {
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             location?.let {
-//                mLatitude = location.latitude
-//                mLongitude = location.longitude
+
                 val currentLatLng = LatLng(location.latitude, location.longitude)
                 map.addMarker(
                     MarkerOptions().position(currentLatLng).title(getString(R.string.your_location))
                 )
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
 
+                qiblaLatLng?.let {qibla->
+                    drawLineBetweenLocations(
+                        start = currentLatLng,
+                        end = qibla
+                    )
+                }
+
             }
         }
+    }
+
+    private fun getQiblaLocation() {
+
+        lifecycleScope.launch {
+
+            viewModel.qiblaDirection.collectLatest { qiblaDirection ->
+                when (qiblaDirection) {
+                    is Result.Error -> {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.can_not_get_direction),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    Result.Loading -> {}
+
+                    is Result.Success -> {
+                        val qiblaLatitude = qiblaDirection.data.data.latitude
+                        val qiblaLongitude = qiblaDirection.data.data.longitude
+                        qiblaLatLng = LatLng(qiblaLatitude, qiblaLongitude)
+
+                        qiblaLatLng?.let {qibla->
+                            map.addMarker(
+                                MarkerOptions()
+                                    .position(qibla)
+                                    .icon(bitmapFromVector(R.drawable.ic_kaaba))
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun drawLineBetweenLocations(start: LatLng, end: LatLng) {
+        val polylineOptions = PolylineOptions()
+            .add(start, end)
+            .color(android.graphics.Color.BLUE)
+            .width(5f)
+        map.addPolyline(polylineOptions)
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun bitmapFromVector(vectorResId: Int): BitmapDescriptor {
+        val vectorDrawable = resources.getDrawable(vectorResId, null)
+        val bitmap = Bitmap.createBitmap(
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
+        vectorDrawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     override fun onResume() {
