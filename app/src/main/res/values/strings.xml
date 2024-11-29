@@ -10,4 +10,6 @@
     <string name="asr">Asr</string>
     <string name="maghrib">Maghrib</string>
     <string name="isha">Isha</string>
+    <string name="your_location">Your Location</string>
+    <string name="go_to_qibla">Go To Qibla</string>
 </resources>

@@ -1,17 +1,43 @@
 package com.ag.projects.aatask.presentation.fragments.qibla
 
+import android.content.Context.SENSOR_SERVICE
+import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.ag.projects.aatask.R
 import com.ag.projects.aatask.databinding.FragmentQiblaBinding
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class QiblaFragment : Fragment() {
+class QiblaFragment : Fragment() , OnMapReadyCallback, SensorEventListener {
 
     private lateinit var binding:FragmentQiblaBinding
+
+    private lateinit var map: GoogleMap
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private lateinit var sensorManager: SensorManager
+
+    private var azimuth: Float = 0f
+    private var gravity: FloatArray? = null
+    private var geomagnetic: FloatArray? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -19,5 +45,139 @@ class QiblaFragment : Fragment() {
     ): View {
         binding  =FragmentQiblaBinding.inflate(layoutInflater,container,false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initGoogleMap()
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        sensorManager = requireContext().getSystemService(SENSOR_SERVICE) as SensorManager
+    }
+
+    private fun initGoogleMap() {
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        map.isMyLocationEnabled = true
+
+        getUserLocation()
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (event == null) return
+
+        Log.d(
+            "SensorEvent",
+            "Sensor type: ${event.sensor.type}, Values: ${event.values.contentToString()}"
+        )
+
+        when (event.sensor.type) {
+            Sensor.TYPE_ACCELEROMETER -> gravity = event.values
+            Sensor.TYPE_MAGNETIC_FIELD -> geomagnetic = event.values
+        }
+
+        Log.d("SensorEvent", "the gravity is $gravity and the geomagnetic is $geomagnetic")
+
+        if (gravity != null && geomagnetic != null) {
+            val R = FloatArray(9)
+            val I = FloatArray(9)
+
+            Log.d("SensorEvent", "enter if statement")
+
+            Log.d("SensorEvent", "enter if rotation matrix")
+
+            val rotationMatrixSuccess = SensorManager.getRotationMatrix(R, I, gravity, geomagnetic)
+
+            if (rotationMatrixSuccess) {
+                Log.d("SensorEvent", "Rotation matrix successfully calculated")
+
+                val orientation = FloatArray(3)
+                SensorManager.getOrientation(R, orientation)
+                azimuth = Math.toDegrees(orientation[0].toDouble()).toFloat()
+                azimuth = (azimuth + 360) % 360 // Normalize azimuth to [0, 360]
+
+                binding.ivDirection.visibility = View.VISIBLE
+                // Update compass icon rotation
+                binding.ivDirection.rotation = -azimuth
+                Log.d("SensorEvent", "the azimuth is $azimuth")
+
+                // Optionally update map bearing (camera rotation)
+//                updateMapDirection(azimuth)
+            } else {
+                Log.d("SensorEvent", "Failed to calculate rotation matrix.")
+            }
+        } else {
+            Log.d("SensorEvent", "Gravity or Geomagnetic data is null")
+        }
+    }
+    private fun updateDirection(azimuth: Float) {
+        binding.ivDirection.rotation = azimuth
+    }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
+
+    private fun getUserLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+//                mLatitude = location.latitude
+//                mLongitude = location.longitude
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                map.addMarker(
+                    MarkerOptions().position(currentLatLng).title(getString(R.string.your_location))
+                )
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
+
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        val magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+
+        if (accelerometer != null) {
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME)
+            Log.d("SensorStatus", "Accelerometer registered")
+        } else {
+            Log.e("SensorStatus", "Accelerometer not available")
+        }
+
+        if (magnetometer != null) {
+            sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_GAME)
+            Log.d("SensorStatus", "Magnetometer registered")
+        } else {
+            Log.e("SensorStatus", "Magnetometer not available")
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(this)
     }
 }

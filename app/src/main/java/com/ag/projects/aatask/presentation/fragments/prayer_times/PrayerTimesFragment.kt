@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ag.projects.aatask.R
 import com.ag.projects.aatask.databinding.FragmentPrayerTimesBinding
@@ -57,7 +58,15 @@ class PrayerTimesFragment : Fragment() {
                 LinearLayoutManager.HORIZONTAL, false
             )
             adapter = prayerTimesAdapter
+
         }
+        binding.btnNavigateToQibla.setOnClickListener {
+            navigateToQibla()
+        }
+    }
+
+    private fun navigateToQibla() {
+        findNavController().navigate(R.id.action_homeFragment_to_qiblaFragment)
     }
 
     private fun checkLocationPermission() {
