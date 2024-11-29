@@ -3,9 +3,9 @@
     android:width="393dp"
     android:height="859dp"
     android:viewportWidth="393"
-    android:viewportHeight="852">
+    android:viewportHeight="859">
   <path
-      android:pathData="M30,0L363,0A30,30 0,0 1,393 30L393,822A30,30 0,0 1,363 852L30,852A30,30 0,0 1,0 822L0,30A30,30 0,0 1,30 0z">
+      android:pathData="M0,0h393v852h-393z">
     <aapt:attr name="android:fillColor">
       <gradient 
           android:startX="196.5"
@@ -27,7 +27,7 @@
       android:pathData="M0,531h393v286h-393z"
       android:fillColor="#0C222B"/>
   <path
-      android:pathData="M0,566h393v286h-393z"
+      android:pathData="M0,573h393v286h-393z"
       android:fillColor="#0C222B"/>
   <path
       android:pathData="M28,53C28.16,54.35 28,55.79 28.7,57.03C29.06,57.71 29.87,58.03 30.63,58.18C31.74,58.38 32.88,58.38 34,58.47C32.54,58.63 30.98,58.47 29.62,59.09C28.88,59.41 28.5,60.14 28.33,60.83C28.09,61.87 28.1,62.94 28,64C27.85,62.83 27.93,61.63 27.55,60.5C27.39,60.03 27.14,59.57 26.7,59.28C26.08,58.87 25.31,58.76 24.58,58.68C23.72,58.57 22.86,58.53 22,58.48C23.36,58.34 24.77,58.43 26.08,57.98C26.76,57.75 27.3,57.21 27.5,56.58C27.93,55.42 27.86,54.19 28,53Z"

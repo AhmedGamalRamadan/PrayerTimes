@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.ag.projects.aatask.R
 import com.ag.projects.aatask.databinding.FragmentPrayerTimesBinding
 import com.ag.projects.aatask.util.Result
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,17 +41,10 @@ class PrayerTimesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         checkLocationPermission()
 
-        getPrayerTimes()
-
-//        requestPermissionLauncher.launch(
-//            arrayOf(
-//                android.Manifest.permission.ACCESS_FINE_LOCATION,
-//                android.Manifest.permission.ACCESS_COARSE_LOCATION,
-//            )
-//        )
     }
 
     private fun checkLocationPermission() {
+
         requestPermissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
                 val fineLocationGranted =
@@ -61,18 +55,29 @@ class PrayerTimesFragment : Fragment() {
                 if (fineLocationGranted || coarseLocationGranted) {
                     Toast.makeText(
                         requireContext(),
-                        "Location permission granted",
+                        getString(R.string.location_permission_granted),
                         Toast.LENGTH_SHORT
                     ).show()
                     getPrayerTimes()
                 } else {
                     Toast.makeText(
                         requireContext(),
-                        "Location permission denied",
+                        getString(R.string.location_permission_denied),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             }
+
+        if (isLocationPermissionGranted()) {
+            getPrayerTimes()
+        } else {
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                )
+            )
+        }
     }
 
     private fun isLocationPermissionGranted(): Boolean {
@@ -93,18 +98,21 @@ class PrayerTimesFragment : Fragment() {
             latitude = 51.508515,
             longitude = 51.508515
         )
+        observePrayerTimes()
+    }
 
-      lifecycleScope.launch(Dispatchers.IO) {
-          viewModel.prayerTimes.collectLatest {
-              when(it){
-                  is Result.Error -> {}
-                  Result.Loading ->{}
-                  is Result.Success ->{
-                      Log.d("the data is ","${it.data.code}")
-                  }
-              }
-          }
-      }
+    private fun observePrayerTimes() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.prayerTimes.collectLatest {prayerTimesResponse->
+                when (prayerTimesResponse) {
+                    is Result.Error -> {}
+                    Result.Loading -> {}
+                    is Result.Success -> {
+                        Log.d("the data is ", "${prayerTimesResponse.data.data}")
+                    }
+                }
+            }
+        }
     }
 
 }
