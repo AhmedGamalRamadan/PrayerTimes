@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ag.projects.aatask.util.Result
 import com.ag.projects.aatask.util.helper.handleRequest
-import com.ag.projects.data.model.prayer_times.PrayerTimesResponse
+import com.ag.projects.domain.model.prayer_times.PrayerTimesResponse
 import com.ag.projects.domain.usecase.prayer_times.GetPrayerTimesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

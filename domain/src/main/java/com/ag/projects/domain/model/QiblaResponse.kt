@@ -1,4 +1,4 @@
-package com.ag.projects.data.model
+package com.ag.projects.domain.model
 
 data class QiblaResponse(
     val code: Int,

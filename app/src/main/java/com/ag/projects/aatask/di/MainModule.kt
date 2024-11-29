@@ -2,7 +2,7 @@ package com.ag.projects.aatask.di
 
 import com.ag.projects.aatask.util.Constants
 import com.ag.projects.data.remote.PrayerTimesService
-import com.ag.projects.data.respoitory.PrayerTimeRepository
+import com.ag.projects.domain.repository.PrayerTimeRepository
 import com.ag.projects.data.respoitory.PrayerTimeRepositoryImpl
 import com.ag.projects.domain.usecase.prayer_times.GetPrayerTimesUseCase
 import com.ag.projects.domain.usecase.qibla.GetQiblaDirectionUseCase

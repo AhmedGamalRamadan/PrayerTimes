@@ -1,8 +1,9 @@
 package com.ag.projects.data.respoitory
 
-import com.ag.projects.data.model.QiblaResponse
-import com.ag.projects.data.model.prayer_times.PrayerTimesResponse
 import com.ag.projects.data.remote.PrayerTimesService
+import com.ag.projects.domain.model.QiblaResponse
+import com.ag.projects.domain.model.prayer_times.PrayerTimesResponse
+import com.ag.projects.domain.repository.PrayerTimeRepository
 
 class PrayerTimeRepositoryImpl(
     private val prayerTimesService: PrayerTimesService

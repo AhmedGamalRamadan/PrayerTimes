@@ -1,7 +1,7 @@
 package com.ag.projects.data.remote
 
-import com.ag.projects.data.model.QiblaResponse
-import com.ag.projects.data.model.prayer_times.PrayerTimesResponse
+import com.ag.projects.domain.model.QiblaResponse
+import com.ag.projects.domain.model.prayer_times.PrayerTimesResponse
 import com.ag.projects.data.util.Constants
 import retrofit2.http.GET
 import retrofit2.http.Path

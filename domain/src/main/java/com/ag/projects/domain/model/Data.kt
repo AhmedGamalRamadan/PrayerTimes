@@ -1,4 +1,4 @@
-package com.ag.projects.data.model
+package com.ag.projects.domain.model
 
 data class Data(
     val direction: Double,

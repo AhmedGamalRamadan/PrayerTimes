@@ -1,4 +1,4 @@
-package com.ag.projects.data.model.prayer_times
+package com.ag.projects.domain.model.prayer_times
 
 data class Gregorian(
     val date: String,
