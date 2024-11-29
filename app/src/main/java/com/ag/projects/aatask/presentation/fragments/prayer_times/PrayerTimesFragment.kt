@@ -13,11 +13,12 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.ag.projects.aatask.R
 import com.ag.projects.aatask.databinding.FragmentPrayerTimesBinding
+import com.ag.projects.aatask.presentation.adapter.PrayerTimesAdapter
 import com.ag.projects.aatask.util.Result
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -29,6 +30,11 @@ class PrayerTimesFragment : Fragment() {
     private val viewModel: PrayerTimeFragmentViewModel by viewModels()
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<Array<String>>
+
+    private val prayerTimesAdapter by lazy {
+        PrayerTimesAdapter()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,8 +45,19 @@ class PrayerTimesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initBinding()
         checkLocationPermission()
 
+    }
+
+    private fun initBinding() {
+        binding.rvPrayerTimes.apply {
+            layoutManager = LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.HORIZONTAL, false
+            )
+            adapter = prayerTimesAdapter
+        }
     }
 
     private fun checkLocationPermission() {
@@ -102,12 +119,13 @@ class PrayerTimesFragment : Fragment() {
     }
 
     private fun observePrayerTimes() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.prayerTimes.collectLatest {prayerTimesResponse->
+        lifecycleScope.launch {
+            viewModel.prayerTimes.collectLatest { prayerTimesResponse ->
                 when (prayerTimesResponse) {
                     is Result.Error -> {}
                     Result.Loading -> {}
                     is Result.Success -> {
+                        prayerTimesAdapter.syncListDiffer.submitList(prayerTimesResponse.data.data)
                         Log.d("the data is ", "${prayerTimesResponse.data.data}")
                     }
                 }
