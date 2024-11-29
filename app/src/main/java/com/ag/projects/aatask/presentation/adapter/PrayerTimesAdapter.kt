@@ -6,9 +6,10 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ag.projects.aatask.databinding.PrayerTimesItemBinding
+import com.ag.projects.aatask.util.helper.convertTo12Hour
 import com.ag.projects.domain.model.prayer_times.Data
 
-class PrayerTimesAdapter: RecyclerView.Adapter<PrayerTimesAdapter.PrayerTimesViewHolder>() {
+class PrayerTimesAdapter : RecyclerView.Adapter<PrayerTimesAdapter.PrayerTimesViewHolder>() {
 
     inner class PrayerTimesViewHolder(
         val binding: PrayerTimesItemBinding
@@ -42,12 +43,12 @@ class PrayerTimesAdapter: RecyclerView.Adapter<PrayerTimesAdapter.PrayerTimesVie
         val prayerTimeItem = syncListDiffer.currentList[position]
         holder.binding.apply {
 
-            tvFajrTime.text = prayerTimeItem.timings.fajr
-            tvSunriseTime.text = prayerTimeItem.timings.sunrise
-            tvDuhrTime.text = prayerTimeItem.timings.dhuhr
-            tvAsrTime.text = prayerTimeItem.timings.asr
-            tvMaghribTime.text = prayerTimeItem.timings.maghrib
-            tvIshaTime.text = prayerTimeItem.timings.isha
+            tvFajrTime.text = convertTo12Hour(prayerTimeItem.timings.fajr)
+            tvSunriseTime.text = convertTo12Hour(prayerTimeItem.timings.sunrise)
+            tvDuhrTime.text = convertTo12Hour(prayerTimeItem.timings.dhuhr)
+            tvAsrTime.text = convertTo12Hour(prayerTimeItem.timings.asr)
+            tvMaghribTime.text = convertTo12Hour(prayerTimeItem.timings.maghrib)
+            tvIshaTime.text = convertTo12Hour(prayerTimeItem.timings.isha)
         }
     }
 

@@ -22,6 +22,7 @@ import com.ag.projects.aatask.util.Result
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 @AndroidEntryPoint
 class PrayerTimesFragment : Fragment() {
@@ -31,6 +32,8 @@ class PrayerTimesFragment : Fragment() {
     private val viewModel: PrayerTimeFragmentViewModel by viewModels()
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<Array<String>>
+
+    private var currentPosition = 0
 
     private val prayerTimesAdapter by lazy {
         PrayerTimesAdapter()
@@ -52,17 +55,31 @@ class PrayerTimesFragment : Fragment() {
     }
 
     private fun initBinding() {
-        binding.rvPrayerTimes.apply {
-            layoutManager = LinearLayoutManager(
-                requireContext(),
-                LinearLayoutManager.HORIZONTAL, false
-            )
-            adapter = prayerTimesAdapter
+        binding.apply {
+            rvPrayerTimes.apply {
+                layoutManager = LinearLayoutManager(
+                    requireContext(),
+                    LinearLayoutManager.HORIZONTAL, false
+                )
+                adapter = prayerTimesAdapter
+            }
+            btnNavigateToQibla.setOnClickListener {
+                navigateToQibla()
+            }
 
+            btnNextTimes.setOnClickListener {
+                currentPosition++
+                rvPrayerTimes.scrollToPosition(currentPosition)
+            }
+
+            btnPreviousTimes.setOnClickListener {
+                if (currentPosition > 0) {
+                    currentPosition--
+                    rvPrayerTimes.scrollToPosition(currentPosition)
+                }
+            }
         }
-        binding.btnNavigateToQibla.setOnClickListener {
-            navigateToQibla()
-        }
+
     }
 
     private fun navigateToQibla() {
@@ -118,9 +135,13 @@ class PrayerTimesFragment : Fragment() {
 
     private fun getPrayerTimes() {
 
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1
+
         viewModel.getPrayerTimes(
-            year = 2017,
-            month = 4,
+            year = year,
+            month = month,
             latitude = 51.508515,
             longitude = 51.508515
         )
