@@ -75,15 +75,11 @@ class PrayerTimesFragment : Fragment() {
             }
 
             btnNextTimes.setOnClickListener {
-                currentPosition++
-                rvPrayerTimes.smoothScrollToPosition(currentPosition)
+                getNextPrayerDay()
             }
 
             btnPreviousTimes.setOnClickListener {
-                if (currentPosition > 0) {
-                    currentPosition--
-                    rvPrayerTimes.smoothScrollToPosition(currentPosition)
-                }
+                getPreviousPrayerDay()
             }
         }
 
@@ -91,6 +87,20 @@ class PrayerTimesFragment : Fragment() {
 
     private fun navigateToQibla() {
         findNavController().navigate(R.id.action_homeFragment_to_qiblaFragment)
+    }
+
+    private fun getNextPrayerDay() {
+        currentPosition++
+        binding.rvPrayerTimes.smoothScrollToPosition(currentPosition)
+        observePrayerTimes()
+    }
+
+    private fun getPreviousPrayerDay() {
+        if (currentPosition > 0) {
+            currentPosition--
+            binding.rvPrayerTimes.smoothScrollToPosition(currentPosition)
+            observePrayerTimes()
+        }
     }
 
     private fun checkLocationPermission() {
@@ -197,9 +207,9 @@ class PrayerTimesFragment : Fragment() {
                     is Result.Success -> {
                         prayerTimesAdapter.syncListDiffer.submitList(prayerTimesResponse.data.data)
                         Log.d("the data is ", "${prayerTimesResponse.data.data}")
-                        prayerTimesResponse.data.data.map {
-                            binding.tvDate.text = it.date.readable
-                        }
+
+                        val currentDay = prayerTimesResponse.data.data[currentPosition]
+                        binding.tvDate.text = currentDay.date.readable
                     }
                 }
             }
