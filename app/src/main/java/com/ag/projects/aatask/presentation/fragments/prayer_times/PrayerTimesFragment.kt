@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ag.projects.aatask.R
 import com.ag.projects.aatask.databinding.FragmentPrayerTimesBinding
 import com.ag.projects.aatask.presentation.adapter.PrayerTimesAdapter
@@ -41,6 +42,8 @@ class PrayerTimesFragment : Fragment() {
     private var latitude = 0.0
     private var longitude = 0.0
 
+    private var prayerTimesListSize = 0
+
     private val prayerTimesAdapter by lazy {
         PrayerTimesAdapter()
     }
@@ -55,21 +58,17 @@ class PrayerTimesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         initBinding()
+        setupPrayerTimesRV()
         checkLocationPermission()
 
     }
 
     private fun initBinding() {
         binding.apply {
-            rvPrayerTimes.apply {
-                layoutManager = LinearLayoutManager(
-                    requireContext(),
-                    LinearLayoutManager.HORIZONTAL, false
-                )
-                adapter = prayerTimesAdapter
-            }
+
             btnNavigateToQibla.setOnClickListener {
                 navigateToQibla()
             }
@@ -82,7 +81,32 @@ class PrayerTimesFragment : Fragment() {
                 getPreviousPrayerDay()
             }
         }
+    }
 
+    private fun setupPrayerTimesRV() {
+        binding.rvPrayerTimes.apply {
+            layoutManager = LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.HORIZONTAL, false
+            )
+            adapter = prayerTimesAdapter
+
+            addRVListener()
+        }
+    }
+
+    private fun addRVListener() {
+        binding.rvPrayerTimes.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
+
+                currentPosition = firstVisibleItem
+                observePrayerTimes()
+            }
+        })
     }
 
     private fun navigateToQibla() {
@@ -90,9 +114,11 @@ class PrayerTimesFragment : Fragment() {
     }
 
     private fun getNextPrayerDay() {
-        currentPosition++
-        binding.rvPrayerTimes.smoothScrollToPosition(currentPosition)
-        observePrayerTimes()
+        if (currentPosition < prayerTimesListSize - 1) {
+            currentPosition++
+            binding.rvPrayerTimes.smoothScrollToPosition(currentPosition)
+            observePrayerTimes()
+        }
     }
 
     private fun getPreviousPrayerDay() {
@@ -118,7 +144,6 @@ class PrayerTimesFragment : Fragment() {
                         getString(R.string.location_permission_granted),
                         Toast.LENGTH_SHORT
                     ).show()
-//                    getPrayerTimes()
                     getUserLocation()
                 } else {
                     Toast.makeText(
@@ -130,7 +155,6 @@ class PrayerTimesFragment : Fragment() {
             }
 
         if (isLocationPermissionGranted()) {
-//            getPrayerTimes()
             getUserLocation()
         } else {
             requestPermissionLauncher.launch(
@@ -184,7 +208,6 @@ class PrayerTimesFragment : Fragment() {
 
     private fun getPrayerTimes() {
 
-
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH) + 1
@@ -202,12 +225,18 @@ class PrayerTimesFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.prayerTimes.collectLatest { prayerTimesResponse ->
                 when (prayerTimesResponse) {
-                    is Result.Error -> {}
-                    Result.Loading -> {}
+                    is Result.Error -> {
+                        hideProgressbar()
+                    }
+                    Result.Loading -> {
+                        showProgressbar()
+                    }
                     is Result.Success -> {
+                        hideProgressbar()
                         prayerTimesAdapter.syncListDiffer.submitList(prayerTimesResponse.data.data)
                         Log.d("the data is ", "${prayerTimesResponse.data.data}")
 
+                        prayerTimesListSize = prayerTimesResponse.data.data.size
                         val currentDay = prayerTimesResponse.data.data[currentPosition]
                         binding.tvDate.text = currentDay.date.readable
                     }
@@ -215,6 +244,14 @@ class PrayerTimesFragment : Fragment() {
             }
 
         }
+    }
+
+    private fun hideProgressbar(){
+        binding.progressbar.visibility =View.GONE
+    }
+
+    private fun showProgressbar(){
+        binding.progressbar.visibility =View.VISIBLE
     }
 
 }
