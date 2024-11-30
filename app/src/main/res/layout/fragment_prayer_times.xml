@@ -20,11 +20,10 @@
 
     <ImageButton
         android:id="@+id/btnNextTimes"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_margin="12dp"
         android:background="@null"
-        android:padding="8dp"
         android:src="@drawable/ic_next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -36,7 +35,7 @@
         android:fontFamily="@font/quick_sand_bold"
         android:gravity="center"
         android:textColor="@color/white"
-        android:textSize="22sp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/btnNextTimes"
         app:layout_constraintStart_toEndOf="@+id/btnPreviousTimes"
         app:layout_constraintTop_toBottomOf="@+id/btnPreviousTimes"
@@ -49,7 +48,7 @@
         android:fontFamily="@font/quick_sand_bold"
         android:gravity="center"
         android:textColor="@color/white"
-        android:textSize="22sp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/btnNextTimes"
         app:layout_constraintStart_toEndOf="@+id/btnPreviousTimes"
         app:layout_constraintTop_toBottomOf="@+id/tvDate"

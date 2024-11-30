@@ -44,7 +44,7 @@ class QiblaFragment : Fragment(), OnMapReadyCallback, SensorEventListener {
 
     private val viewModel: QiblaFragmentViewModel by viewModels()
 
-    private var qiblaLatLng: LatLng? = null
+    private var userLocation: LatLng? = null
 
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -170,12 +170,7 @@ class QiblaFragment : Fragment(), OnMapReadyCallback, SensorEventListener {
                 )
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
 
-                qiblaLatLng?.let {qibla->
-                    drawLineBetweenLocations(
-                        start = currentLatLng,
-                        end = qibla
-                    )
-                }
+                userLocation = currentLatLng
 
             }
         }
@@ -200,14 +195,22 @@ class QiblaFragment : Fragment(), OnMapReadyCallback, SensorEventListener {
                     is Result.Success -> {
                         val qiblaLatitude = qiblaDirection.data.data.latitude
                         val qiblaLongitude = qiblaDirection.data.data.longitude
-                        qiblaLatLng = LatLng(qiblaLatitude, qiblaLongitude)
+                        val qiblaLatLng = LatLng(qiblaLatitude, qiblaLongitude)
 
-                        qiblaLatLng?.let {qibla->
+                        qiblaLatLng?.let { qibla ->
                             map.addMarker(
                                 MarkerOptions()
                                     .position(qibla)
                                     .icon(bitmapFromVector(R.drawable.ic_kaaba))
                             )
+
+                            userLocation?.let { end ->
+                                drawLineBetweenLocations(
+                                    start = qibla,
+                                    end = end
+                                )
+                            }
+
                         }
                     }
                 }

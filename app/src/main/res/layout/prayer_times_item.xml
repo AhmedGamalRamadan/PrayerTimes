@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="400dp"
-    android:padding="12dp"
     android:layout_margin="10dp"
+    android:padding="12dp"
+    android:backgroundTint="@color/light_blue"
     app:cardCornerRadius="12dp">
 
     <LinearLayout
@@ -30,12 +31,10 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvFajrTime"
+                style="@style/TextPrayerTimes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/quick_sand_bold"
                 android:gravity="end"
-                android:textColor="@color/black"
-                android:textSize="24sp"
                 tools:text="12 AM" />
         </LinearLayout>
 
@@ -61,12 +60,10 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvSunriseTime"
+                style="@style/TextPrayerTimes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/quick_sand_bold"
                 android:gravity="end"
-                android:textColor="@color/black"
-                android:textSize="24sp"
                 tools:text="12 AM" />
         </LinearLayout>
 
@@ -92,12 +89,10 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDuhrTime"
+                style="@style/TextPrayerTimes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/quick_sand_bold"
                 android:gravity="end"
-                android:textColor="@color/black"
-                android:textSize="24sp"
                 tools:text="12 AM" />
         </LinearLayout>
 
@@ -123,12 +118,10 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvAsrTime"
+                style="@style/TextPrayerTimes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/quick_sand_bold"
                 android:gravity="end"
-                android:textColor="@color/black"
-                android:textSize="24sp"
                 tools:text="12 AM" />
         </LinearLayout>
 
@@ -154,12 +147,10 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvMaghribTime"
+                style="@style/TextPrayerTimes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/quick_sand_bold"
                 android:gravity="end"
-                android:textColor="@color/black"
-                android:textSize="24sp"
                 tools:text="12 AM" />
         </LinearLayout>
 
@@ -185,12 +176,10 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvIshaTime"
+                style="@style/TextPrayerTimes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/quick_sand_bold"
                 android:gravity="end"
-                android:textColor="@color/black"
-                android:textSize="24sp"
                 tools:text="12 AM" />
         </LinearLayout>
 

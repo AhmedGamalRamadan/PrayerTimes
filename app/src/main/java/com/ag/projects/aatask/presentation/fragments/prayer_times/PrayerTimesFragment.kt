@@ -189,6 +189,7 @@ class PrayerTimesFragment : Fragment() {
         }
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+
             location?.let {
                 latitude = location.latitude
                 longitude = location.longitude
@@ -201,8 +202,17 @@ class PrayerTimesFragment : Fragment() {
                     )
 
                 binding.tvUserLocation.text = userLocation
+
+                getPrayerTimes()
             }
-            getPrayerTimes()
+        }.addOnFailureListener {
+            Toast.makeText(requireContext(), getString(R.string.can_not_get_location), Toast.LENGTH_SHORT).show()
+            Log.d("prayer fragment location is ","failure $it")
+            return@addOnFailureListener
+        }.addOnCanceledListener {
+            Toast.makeText(requireContext(), getString(R.string.can_not_get_location), Toast.LENGTH_SHORT).show()
+            Log.d("prayer fragment location is ","Canceled")
+            return@addOnCanceledListener
         }
     }
 

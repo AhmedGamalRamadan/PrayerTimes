@@ -43,12 +43,12 @@ class PrayerTimesAdapter : RecyclerView.Adapter<PrayerTimesAdapter.PrayerTimesVi
         val prayerTimeItem = syncListDiffer.currentList[position]
         holder.binding.apply {
 
-            tvFajrTime.text = convertTo12Hour(prayerTimeItem.timings.fajr)
-            tvSunriseTime.text = convertTo12Hour(prayerTimeItem.timings.sunrise)
-            tvDuhrTime.text = convertTo12Hour(prayerTimeItem.timings.dhuhr)
-            tvAsrTime.text = convertTo12Hour(prayerTimeItem.timings.asr)
-            tvMaghribTime.text = convertTo12Hour(prayerTimeItem.timings.maghrib)
-            tvIshaTime.text = convertTo12Hour(prayerTimeItem.timings.isha)
+            tvFajrTime.text = convertTo12Hour(prayerTimeItem.timings.fajr) ?: ""
+            tvSunriseTime.text = convertTo12Hour(prayerTimeItem.timings.sunrise) ?: ""
+            tvDuhrTime.text = convertTo12Hour(prayerTimeItem.timings.dhuhr) ?: ""
+            tvAsrTime.text = convertTo12Hour(prayerTimeItem.timings.asr) ?: ""
+            tvMaghribTime.text = convertTo12Hour(prayerTimeItem.timings.maghrib) ?: ""
+            tvIshaTime.text = convertTo12Hour(prayerTimeItem.timings.isha) ?: ""
         }
     }
 

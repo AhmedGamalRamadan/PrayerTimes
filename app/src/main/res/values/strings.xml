@@ -13,4 +13,5 @@
     <string name="your_location">Your Location</string>
     <string name="go_to_qibla">Go To Qibla</string>
     <string name="can_not_get_direction">can not get direction</string>
+    <string name="can_not_get_location">Can not get location</string>
 </resources>

@@ -1,6 +1,10 @@
 package com.ag.projects.domain.model.prayer_times
 
+import com.google.gson.annotations.SerializedName
+
 data class Params(
-    val Fajr: Int,
-    val Isha: Int
+    @SerializedName("Fajr")
+    val fajr: Double?,
+    @SerializedName("Isha")
+    val isha: Double?
 )
