@@ -20,7 +20,10 @@ import com.ag.projects.aatask.R
 import com.ag.projects.aatask.databinding.FragmentPrayerTimesBinding
 import com.ag.projects.aatask.presentation.adapter.PrayerTimesAdapter
 import com.ag.projects.aatask.util.Result
+import com.ag.projects.aatask.util.helper.formatDuration
 import com.ag.projects.aatask.util.helper.getAddressFromLatLng
+import com.ag.projects.aatask.util.helper.getNextPrayerTime
+import com.ag.projects.aatask.util.helper.toMap
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.AndroidEntryPoint
@@ -206,12 +209,20 @@ class PrayerTimesFragment : Fragment() {
                 getPrayerTimes()
             }
         }.addOnFailureListener {
-            Toast.makeText(requireContext(), getString(R.string.can_not_get_location), Toast.LENGTH_SHORT).show()
-            Log.d("prayer fragment location is ","failure $it")
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.can_not_get_location),
+                Toast.LENGTH_SHORT
+            ).show()
+            Log.d("prayer fragment location is ", "failure $it")
             return@addOnFailureListener
         }.addOnCanceledListener {
-            Toast.makeText(requireContext(), getString(R.string.can_not_get_location), Toast.LENGTH_SHORT).show()
-            Log.d("prayer fragment location is ","Canceled")
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.can_not_get_location),
+                Toast.LENGTH_SHORT
+            ).show()
+            Log.d("prayer fragment location is ", "Canceled")
             return@addOnCanceledListener
         }
     }
@@ -238,17 +249,40 @@ class PrayerTimesFragment : Fragment() {
                     is Result.Error -> {
                         hideProgressbar()
                     }
+
                     Result.Loading -> {
                         showProgressbar()
                     }
+
                     is Result.Success -> {
                         hideProgressbar()
-                        prayerTimesAdapter.syncListDiffer.submitList(prayerTimesResponse.data.data)
+                        val prayerDataList = prayerTimesResponse.data.data
+                        prayerTimesAdapter.syncListDiffer.submitList(prayerDataList)
                         Log.d("the data is ", "${prayerTimesResponse.data.data}")
 
-                        prayerTimesListSize = prayerTimesResponse.data.data.size
-                        val currentDay = prayerTimesResponse.data.data[currentPosition]
+                        prayerTimesListSize = prayerDataList.size
+                        val currentDay = prayerDataList[currentPosition]
                         binding.tvDate.text = currentDay.date.readable
+
+                        // Get cleaned prayer timings
+                        val prayerTimings = currentDay.timings.toMap()
+                        val timezone = currentDay.meta.timezone
+
+                        // Calculate the next prayer
+                        val nextPrayer = timezone?.let { getNextPrayerTime(prayerTimings, it) }
+
+                        // Update the UI with the next prayer info
+                        if (nextPrayer != null) {
+                            binding.tvNextPrayerName.text = nextPrayer.first
+                            val formattedTimeLeft = formatDuration(nextPrayer.second)
+                            binding.tvPrayerTimeLeft.text =
+                                getString(R.string.time_left, formattedTimeLeft)
+                        } else {
+                            binding.tvNextPrayerName.text =
+                                getString(R.string.no_more_prayers_today)
+                            binding.tvPrayerTimeLeft.text = ""
+                        }
+
                     }
                 }
             }
@@ -256,12 +290,17 @@ class PrayerTimesFragment : Fragment() {
         }
     }
 
-    private fun hideProgressbar(){
-        binding.progressbar.visibility =View.GONE
+    private fun hideProgressbar() {
+        binding.progressbar.visibility = View.GONE
     }
 
-    private fun showProgressbar(){
-        binding.progressbar.visibility =View.VISIBLE
+    private fun showProgressbar() {
+        binding.progressbar.visibility = View.VISIBLE
     }
 
+    fun Map<String, String>.toCleanedPrayerTimings(): Map<String, String> {
+        return this.mapValues { entry ->
+            entry.value.split(" ")[0] // Extract "HH:mm" part
+        }
+    }
 }

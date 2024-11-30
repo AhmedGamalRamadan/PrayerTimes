@@ -32,6 +32,7 @@
         android:id="@+id/tvDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
         android:fontFamily="@font/quick_sand_bold"
         android:gravity="center"
         android:textColor="@color/white"
@@ -39,6 +40,7 @@
         app:layout_constraintEnd_toStartOf="@+id/btnNextTimes"
         app:layout_constraintStart_toEndOf="@+id/btnPreviousTimes"
         app:layout_constraintTop_toBottomOf="@+id/btnPreviousTimes"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="DEC 12 2024" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -54,6 +56,42 @@
         app:layout_constraintTop_toBottomOf="@+id/tvDate"
         tools:text="CAIRO EGYPT" />
 
+    <LinearLayout
+        android:id="@+id/linearNextPrayerTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/rvPrayerTimes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvUserLocation">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/white"
+            android:text="@string/next_prayer" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvNextPrayerName"
+            style="@style/TextPrayerTimes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            tools:text="ISHA" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvPrayerTimeLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/white"
+            tools:text="Time Left 1 hr 16 min" />
+    </LinearLayout>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPrayerTimes"
         android:layout_width="0dp"
@@ -62,7 +100,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvUserLocation" />
+        app:layout_constraintTop_toBottomOf="@+id/linearNextPrayerTime" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnNavigateToQibla"
@@ -79,10 +117,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:indeterminateTint="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/btnNavigateToQibla"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvUserLocation"
-        app:layout_constraintBottom_toTopOf="@+id/btnNavigateToQibla"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvUserLocation" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
