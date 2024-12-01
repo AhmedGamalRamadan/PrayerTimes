@@ -1,9 +1,16 @@
 package com.ag.projects.fake
 
 import com.ag.projects.domain.entity.DataEntity
+import com.ag.projects.domain.model.QiblaResponse
 import com.ag.projects.domain.model.prayer_times.Data
 import com.ag.projects.domain.model.prayer_times.PrayerTimesResponse
 import com.ag.projects.domain.model.prayer_times.Timings
+
+
+const val year = 2024
+const val month = 12
+const val lat = 33.11
+const val lng = 33.11
 
 
 val timing = Timings(
@@ -49,9 +56,24 @@ val emptyPrayerTimesResponse = PrayerTimesResponse(
     status = "fail"
 )
 
-const val year = 2024
-const val month = 12
-const val lat = 33.11
-const val lng = 33.11
 
+val successQiblaResponse = QiblaResponse(
+    code = 1,
+    data = com.ag.projects.domain.model.Data(
+        direction = lat,
+        latitude = lat,
+        longitude = lng
+    ),
+    status = "success"
+)
+
+val failQiblaResponse = QiblaResponse(
+    code = 0,
+    data = com.ag.projects.domain.model.Data(
+        direction = lat,
+        latitude = lat,
+        longitude = lng
+    ),
+    status = "fail"
+)
 
