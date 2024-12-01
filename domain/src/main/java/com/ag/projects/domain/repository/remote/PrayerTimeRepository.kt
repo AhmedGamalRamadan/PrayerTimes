@@ -1,4 +1,4 @@
-package com.ag.projects.domain.repository
+package com.ag.projects.domain.repository.remote
 
 import com.ag.projects.domain.model.QiblaResponse
 import com.ag.projects.domain.model.prayer_times.PrayerTimesResponse

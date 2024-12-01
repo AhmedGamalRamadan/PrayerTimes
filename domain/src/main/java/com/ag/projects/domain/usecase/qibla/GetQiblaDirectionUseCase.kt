@@ -1,7 +1,7 @@
 package com.ag.projects.domain.usecase.qibla
 
 import com.ag.projects.domain.model.QiblaResponse
-import com.ag.projects.domain.repository.PrayerTimeRepository
+import com.ag.projects.domain.repository.remote.PrayerTimeRepository
 
 class GetQiblaDirectionUseCase(
     private val prayerTimeRepository: PrayerTimeRepository

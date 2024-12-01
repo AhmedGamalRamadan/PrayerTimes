@@ -1,7 +1,7 @@
 package com.ag.projects.domain.usecase.prayer_times
 
 import com.ag.projects.domain.model.prayer_times.PrayerTimesResponse
-import com.ag.projects.domain.repository.PrayerTimeRepository
+import com.ag.projects.domain.repository.remote.PrayerTimeRepository
 
 class GetRemotePrayerTimesUseCase(
     private val prayerTimeRepository: PrayerTimeRepository

@@ -6,9 +6,9 @@ import com.ag.projects.aatask.util.Constants
 import com.ag.projects.aatask.util.network.NetworkConnection
 import com.ag.projects.data.local.PrayerTimesDataBase
 import com.ag.projects.data.remote.PrayerTimesService
-import com.ag.projects.data.respoitory.PrayerTimeRepositoryImpl
+import com.ag.projects.data.respoitory.remote.PrayerTimeRepositoryImpl
 import com.ag.projects.data.respoitory.local.PrayerTimesLocalRepositoryImpl
-import com.ag.projects.domain.repository.PrayerTimeRepository
+import com.ag.projects.domain.repository.remote.PrayerTimeRepository
 import com.ag.projects.domain.repository.local.PrayerTimesLocalRepository
 import com.ag.projects.domain.usecase.local.ClearPrayerTimesUseCase
 import com.ag.projects.domain.usecase.local.GetLocalPrayerTimesUseCase
