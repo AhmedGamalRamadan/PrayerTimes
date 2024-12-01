@@ -228,6 +228,7 @@ class PrayerTimesFragment : Fragment() {
     }
 
     private fun getPrayerTimes() {
+        Log.d("InsertPrayerTimesUseCase","enter get prayer times from fragment")
 
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -243,6 +244,8 @@ class PrayerTimesFragment : Fragment() {
     }
 
     private fun observePrayerTimes() {
+        Log.d("InsertPrayerTimesUseCase","enter observer from fragment")
+
         lifecycleScope.launch {
             viewModel.prayerTimes.collectLatest { prayerTimesResponse ->
                 when (prayerTimesResponse) {
@@ -262,11 +265,11 @@ class PrayerTimesFragment : Fragment() {
 
                         prayerTimesListSize = prayerDataList.size
                         val currentDay = prayerDataList[currentPosition]
-                        binding.tvDate.text = currentDay.date.readable
+                        binding.tvDate.text = currentDay.date?.readable
 
                         // Get cleaned prayer timings
                         val prayerTimings = currentDay.timings.toMap()
-                        val timezone = currentDay.meta.timezone
+                        val timezone = currentDay.meta?.timezone
 
                         // Calculate the next prayer
                         val nextPrayer = timezone?.let { getNextPrayerTime(prayerTimings, it) }

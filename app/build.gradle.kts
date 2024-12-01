@@ -95,6 +95,11 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("com.google.android.gms:play-services-maps:19.0.0")
 
+    // Room
+    implementation("androidx.room:room-ktx:2.6.0")
+    kapt("androidx.room:room-compiler:2.6.0")
+    implementation("androidx.room:room-paging:2.6.0")
+
     // Paging library
     implementation("androidx.paging:paging-runtime:3.1.1")
     implementation("androidx.paging:paging-common-ktx:3.1.1")
