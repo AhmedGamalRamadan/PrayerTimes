@@ -53,5 +53,12 @@ dependencies {
     kapt("androidx.room:room-compiler:2.6.0")
     implementation("androidx.room:room-paging:2.6.0")
 
+    //unit testing
+    testImplementation("io.mockk:mockk-android:1.13.13")
+    testImplementation("io.mockk:mockk-agent:1.13.13")
+    testImplementation("androidx.test:core:1.5.0")
+//    testImplementation("org.robolectric:robolectric:4.10.3")
+
+
     implementation(project(mapOf("path" to ":domain")))
 }
