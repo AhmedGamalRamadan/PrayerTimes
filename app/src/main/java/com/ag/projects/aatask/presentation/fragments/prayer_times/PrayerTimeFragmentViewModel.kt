@@ -5,13 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ag.projects.aatask.util.Result
 import com.ag.projects.aatask.util.helper.handleRequest
-import com.ag.projects.data.local.entity.toData
-import com.ag.projects.data.local.entity.toDataEntity
+import com.ag.projects.aatask.util.network.NetworkConnection
+import com.ag.projects.data.local.mapper.toData
+import com.ag.projects.data.local.mapper.toDataEntity
 import com.ag.projects.domain.model.prayer_times.PrayerTimesResponse
 import com.ag.projects.domain.usecase.local.ClearPrayerTimesUseCase
 import com.ag.projects.domain.usecase.local.GetLocalPrayerTimesUseCase
 import com.ag.projects.domain.usecase.local.InsertPrayerTimesUseCase
-import com.ag.projects.domain.usecase.prayer_times.GetPrayerTimesUseCase
+import com.ag.projects.domain.usecase.prayer_times.GetRemotePrayerTimesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,10 +21,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PrayerTimeFragmentViewModel @Inject constructor(
-    private val getPrayerTimesUseCase: GetPrayerTimesUseCase,
+    private val getRemotePrayerTimesUseCase: GetRemotePrayerTimesUseCase,
     private val insertPrayerTimesUseCase: InsertPrayerTimesUseCase,
     private val getLocalPrayerTimesUseCase: GetLocalPrayerTimesUseCase,
-    private val clearPrayerTimesUseCase: ClearPrayerTimesUseCase
+    private val clearPrayerTimesUseCase: ClearPrayerTimesUseCase,
+    private val networkConnection: NetworkConnection
 ) : ViewModel() {
 
     private val _prayerTimes = MutableStateFlow<Result<PrayerTimesResponse>>(Result.Loading)
@@ -38,21 +40,13 @@ class PrayerTimeFragmentViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
 
-//            clearPrayerTimesDatabase()
-            val localData = getLocalPrayerTimesUseCase()
-            if (localData.isNotEmpty()) {
-                Log.d("InsertPrayerTimesUseCase","the data base not empty contain $localData")
+            if (networkConnection.isWifiConnected()) {
+                //clear previous data
+                clearPrayerTimesDatabase()
+                Log.d("InsertPrayerTimesUseCase", "the data base is cleared")
 
-                val prayerTimesResponse = PrayerTimesResponse(
-                    code = 0,
-                    data = localData.map { it.toData() },
-                    status = "local data"
-                )
-                _prayerTimes.emit(Result.Success(prayerTimesResponse))
-            } else {
-                Log.d("InsertPrayerTimesUseCase","the data base is empty")
-
-                val prayerTimesResponse = getPrayerTimesUseCase(
+                //load new data
+                val prayerTimesResponse = getRemotePrayerTimesUseCase(
                     year = year,
                     month = month,
                     latitude = latitude,
@@ -73,15 +67,32 @@ class PrayerTimeFragmentViewModel @Inject constructor(
                         insertPrayerTimesUseCase(dataEntities)
                     }
                 }
+            } else {
+                //load from database
+                val localData = getLocalPrayerTimesUseCase()
+                if (localData.isNotEmpty()) {
+                    Log.d("InsertPrayerTimesUseCase", "the data base not empty contain $localData")
+                    val prayerTimesResponse = PrayerTimesResponse(
+                        code = 0,
+                        data = localData.map { it.toData() },
+                        status = "local data"
+                    )
+                    _prayerTimes.emit(Result.Success(prayerTimesResponse))
+                }
             }
 
         }
     }
 
-    fun clearPrayerTimesDatabase() {
+    private fun clearPrayerTimesDatabase() {
         viewModelScope.launch {
             clearPrayerTimesUseCase()
         }
+    }
+
+    suspend fun localDataExist(): Boolean {
+        val localData = getLocalPrayerTimesUseCase()
+        return localData.isNotEmpty()
     }
 
 }

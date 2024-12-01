@@ -3,6 +3,7 @@ package com.ag.projects.aatask.di
 import android.app.Application
 import androidx.room.Room
 import com.ag.projects.aatask.util.Constants
+import com.ag.projects.aatask.util.network.NetworkConnection
 import com.ag.projects.data.local.PrayerTimesDataBase
 import com.ag.projects.data.remote.PrayerTimesService
 import com.ag.projects.data.respoitory.PrayerTimeRepositoryImpl
@@ -12,7 +13,7 @@ import com.ag.projects.domain.repository.local.PrayerTimesLocalRepository
 import com.ag.projects.domain.usecase.local.ClearPrayerTimesUseCase
 import com.ag.projects.domain.usecase.local.GetLocalPrayerTimesUseCase
 import com.ag.projects.domain.usecase.local.InsertPrayerTimesUseCase
-import com.ag.projects.domain.usecase.prayer_times.GetPrayerTimesUseCase
+import com.ag.projects.domain.usecase.prayer_times.GetRemotePrayerTimesUseCase
 import com.ag.projects.domain.usecase.qibla.GetQiblaDirectionUseCase
 import dagger.Module
 import dagger.Provides
@@ -49,7 +50,7 @@ object MainModule {
     @Provides
     @Singleton
     fun providePrayerTimesUseCase(prayerTimeRepository: PrayerTimeRepository) =
-        GetPrayerTimesUseCase(prayerTimeRepository)
+        GetRemotePrayerTimesUseCase(prayerTimeRepository)
 
 
     @Provides
@@ -94,4 +95,8 @@ object MainModule {
         prayerTimesLocalRepository: PrayerTimesLocalRepository
     ): ClearPrayerTimesUseCase =
         ClearPrayerTimesUseCase(prayerTimesLocalRepository)
+
+    @Provides
+    @Singleton
+    fun provideNetworkContext(context: Application): NetworkConnection = NetworkConnection(context)
 }

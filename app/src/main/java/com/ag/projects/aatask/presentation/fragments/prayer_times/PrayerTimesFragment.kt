@@ -67,6 +67,7 @@ class PrayerTimesFragment : Fragment() {
         setupPrayerTimesRV()
         checkLocationPermission()
 
+        fetchLocalData()
     }
 
     private fun initBinding() {
@@ -180,6 +181,8 @@ class PrayerTimesFragment : Fragment() {
     }
 
     private fun getUserLocation() {
+        Log.d("InsertPrayerTimesUseCase", "enter get user location")
+
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -190,7 +193,6 @@ class PrayerTimesFragment : Fragment() {
         ) {
             return
         }
-
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
 
             location?.let {
@@ -227,8 +229,16 @@ class PrayerTimesFragment : Fragment() {
         }
     }
 
+    private fun fetchLocalData() {
+        lifecycleScope.launch {
+            if (viewModel.localDataExist()) {
+                getPrayerTimes()
+            }
+        }
+    }
+
     private fun getPrayerTimes() {
-        Log.d("InsertPrayerTimesUseCase","enter get prayer times from fragment")
+        Log.d("InsertPrayerTimesUseCase", "enter get prayer times from fragment")
 
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -244,7 +254,7 @@ class PrayerTimesFragment : Fragment() {
     }
 
     private fun observePrayerTimes() {
-        Log.d("InsertPrayerTimesUseCase","enter observer from fragment")
+        Log.d("InsertPrayerTimesUseCase", "enter observer from fragment")
 
         lifecycleScope.launch {
             viewModel.prayerTimes.collectLatest { prayerTimesResponse ->

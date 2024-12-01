@@ -1,4 +1,4 @@
-package com.ag.projects.data.local.entity
+package com.ag.projects.data.local.mapper
 
 import com.ag.projects.domain.entity.DataEntity
 import com.ag.projects.domain.model.prayer_times.Data
