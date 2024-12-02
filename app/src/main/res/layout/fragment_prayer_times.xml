@@ -70,6 +70,7 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
             android:layout_weight="1"
             android:text="@string/next_prayer"
             android:textColor="@color/white" />
@@ -79,6 +80,7 @@
             style="@style/TextPrayerTimes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
             android:layout_weight="1"
             tools:text="ISHA" />
 
@@ -86,6 +88,7 @@
             android:id="@+id/tvPrayerTimeLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
             android:layout_weight="1"
             android:textColor="@color/white"
             tools:text="Time Left 1 hr 16 min" />
@@ -129,11 +132,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        tools:text="@string/can_not_get_the_data"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/btnNavigateToQibla"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvUserLocation" />
+        app:layout_constraintTop_toBottomOf="@+id/tvUserLocation"
+        tools:text="@string/can_not_get_the_data" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
