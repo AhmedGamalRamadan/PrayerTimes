@@ -59,6 +59,10 @@ dependencies {
     testImplementation("androidx.test:core:1.5.0")
 //    testImplementation("org.robolectric:robolectric:4.10.3")
 
+    //mockweb server
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
+
 
     implementation(project(mapOf("path" to ":domain")))
 }
