@@ -17,4 +17,6 @@
     <string name="next_prayer">Next  Prayer</string>
     <string name="no_more_prayers_today">No more prayers today</string>
     <string name="time_left">Time Left: %1$s</string>
+    <string name="can_not_get_the_data">Can not get the data</string>
+    <string name="enable_location_services">enable location services</string>
 </resources>

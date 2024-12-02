@@ -1,6 +1,10 @@
 package com.ag.projects.aatask.presentation.fragments.prayer_times
 
+import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,13 +36,14 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 @AndroidEntryPoint
-class PrayerTimesFragment : Fragment() {
+class PrayerTimesFragment : Fragment(), LocationListener {
 
     private lateinit var binding: FragmentPrayerTimesBinding
 
     private val viewModel: PrayerTimeFragmentViewModel by viewModels()
 
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<Array<String>>
+    private lateinit var locationManager: LocationManager
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var currentPosition = 0
@@ -63,11 +68,15 @@ class PrayerTimesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        locationManager =
+            requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         initBinding()
         setupPrayerTimesRV()
         checkLocationPermission()
 
         fetchLocalData()
+
     }
 
     private fun initBinding() {
@@ -193,45 +202,82 @@ class PrayerTimesFragment : Fragment() {
         ) {
             return
         }
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
 
-            location?.let {
-                latitude = location.latitude
-                longitude = location.longitude
+        locationManager.requestLocationUpdates(
+            LocationManager.GPS_PROVIDER,
+            5000L,
+            10f,
+            this
+        )
 
-                val userLocation =
-                    getAddressFromLatLng(
-                        requireContext(),
-                        location.latitude,
-                        location.longitude
-                    )
+        /*
+         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
 
-                binding.tvUserLocation.text = userLocation
+             location?.let {
+                 latitude = location.latitude
+                 longitude = location.longitude
 
-                getPrayerTimes()
-            }
-        }.addOnFailureListener {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.can_not_get_location),
-                Toast.LENGTH_SHORT
-            ).show()
-            Log.d("prayer fragment location is ", "failure $it")
-            return@addOnFailureListener
-        }.addOnCanceledListener {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.can_not_get_location),
-                Toast.LENGTH_SHORT
-            ).show()
-            Log.d("prayer fragment location is ", "Canceled")
-            return@addOnCanceledListener
+                 val userLocation =
+                     getAddressFromLatLng(
+                         requireContext(),
+                         location.latitude,
+                         location.longitude
+                     )
+
+                 binding.tvUserLocation.text = userLocation
+
+                 getPrayerTimes()
+             }
+         }.addOnFailureListener {
+             Toast.makeText(
+                 requireContext(),
+                 getString(R.string.can_not_get_location),
+                 Toast.LENGTH_SHORT
+             ).show()
+             Log.d("prayer fragment location is ", "failure $it")
+             return@addOnFailureListener
+         }.addOnCanceledListener {
+             Toast.makeText(
+                 requireContext(),
+                 getString(R.string.can_not_get_location),
+                 Toast.LENGTH_SHORT
+             ).show()
+             Log.d("prayer fragment location is ", "Canceled")
+             return@addOnCanceledListener
+         }
+         */
+    }
+
+    override fun onLocationChanged(location: Location) {
+        latitude = location.latitude
+        longitude = location.longitude
+
+        if (latitude != 0.0 && longitude != 0.0) {
+            Log.d("InsertPrayerTimesUseCase", "lat is $latitude and lng is $longitude")
+            val userLocation =
+                getAddressFromLatLng(
+                    requireContext(),
+                    location.latitude,
+                    location.longitude
+                )
+
+            binding.tvUserLocation.text = userLocation
+            getPrayerTimes()
         }
+    }
+
+    override fun onProviderDisabled(provider: String) {
+        super.onProviderDisabled(provider)
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.enable_location_services), Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun fetchLocalData() {
         lifecycleScope.launch {
             if (viewModel.localDataExist()) {
+                Log.d("InsertPrayerTimesUseCase", "enter fetch local data from fragment")
                 getPrayerTimes()
             }
         }
@@ -261,14 +307,18 @@ class PrayerTimesFragment : Fragment() {
                 when (prayerTimesResponse) {
                     is Result.Error -> {
                         hideProgressbar()
+                        showTextViewError()
+                        binding.tvCannotGetData.text = prayerTimesResponse.message
                     }
 
                     Result.Loading -> {
                         showProgressbar()
+                        hideTextViewError()
                     }
 
                     is Result.Success -> {
                         hideProgressbar()
+                        hideTextViewError()
                         val prayerDataList = prayerTimesResponse.data.data
                         prayerTimesAdapter.syncListDiffer.submitList(prayerDataList)
                         Log.d("the data is ", "${prayerTimesResponse.data.data}")
@@ -290,12 +340,7 @@ class PrayerTimesFragment : Fragment() {
                             val formattedTimeLeft = formatDuration(nextPrayer.second)
                             binding.tvPrayerTimeLeft.text =
                                 getString(R.string.time_left, formattedTimeLeft)
-                        } else {
-                            binding.tvNextPrayerName.text =
-                                getString(R.string.no_more_prayers_today)
-                            binding.tvPrayerTimeLeft.text = ""
                         }
-
                     }
                 }
             }
@@ -309,6 +354,14 @@ class PrayerTimesFragment : Fragment() {
 
     private fun showProgressbar() {
         binding.progressbar.visibility = View.VISIBLE
+    }
+
+    private fun hideTextViewError() {
+        binding.tvCannotGetData.visibility = View.GONE
+    }
+
+    private fun showTextViewError() {
+        binding.tvCannotGetData.visibility = View.VISIBLE
     }
 
     fun Map<String, String>.toCleanedPrayerTimings(): Map<String, String> {

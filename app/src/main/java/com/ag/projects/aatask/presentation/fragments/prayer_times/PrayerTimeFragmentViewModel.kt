@@ -40,47 +40,57 @@ class PrayerTimeFragmentViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
 
-            if (networkConnection.isWifiConnected()) {
-                //clear previous data
-                clearPrayerTimesDatabase()
-                Log.d("InsertPrayerTimesUseCase", "the data base is cleared")
+            try {
+                if (networkConnection.isWifiConnected()) {
+                    //clear previous data
+                    clearPrayerTimesDatabase()
+                    Log.d("InsertPrayerTimesUseCase", "the data base is cleared")
 
-                //load new data
-                val prayerTimesResponse = getRemotePrayerTimesUseCase(
-                    year = year,
-                    month = month,
-                    latitude = latitude,
-                    longitude = longitude
-                )
-
-                handleRequest(
-                    request = {
-                        prayerTimesResponse
-                    },
-                    state = _prayerTimes
-                )
-
-                if (_prayerTimes.value is Result.Success) {
-                    val response = (_prayerTimes.value as Result.Success).data
-                    val dataEntities = response.data.map { it.toDataEntity() }
-                    launch {
-                        insertPrayerTimesUseCase(dataEntities)
-                    }
-                }
-            } else {
-                //load from database
-                val localData = getLocalPrayerTimesUseCase()
-                if (localData.isNotEmpty()) {
-                    Log.d("InsertPrayerTimesUseCase", "the data base not empty contain $localData")
-                    val prayerTimesResponse = PrayerTimesResponse(
-                        code = 0,
-                        data = localData.map { it.toData() },
-                        status = "local data"
+                    //load new data
+                    handleRequest(
+                        request = {
+                            getRemotePrayerTimesUseCase(
+                                year = year,
+                                month = month,
+                                latitude = latitude,
+                                longitude = longitude
+                            )
+                        },
+                        state = _prayerTimes
                     )
-                    _prayerTimes.emit(Result.Success(prayerTimesResponse))
+
+                    if (_prayerTimes.value is Result.Success) {
+                        val response = (_prayerTimes.value as Result.Success).data
+                        val dataEntities = response.data.map { it.toDataEntity() }
+                        launch {
+                            insertPrayerTimesUseCase(dataEntities)
+                        }
+                    }
+                } else {
+                    //load from database
+                    loadLocalData()
                 }
+            } catch (e: Exception) {
+                _prayerTimes.emit(Result.Error(e.message ?: "An unexpected error occurred"))
             }
 
+        }
+    }
+
+    private fun loadLocalData() {
+        viewModelScope.launch {
+            val localData = getLocalPrayerTimesUseCase()
+            if (localData.isNotEmpty()) {
+                Log.d("InsertPrayerTimesUseCase", "the data base not empty contain $localData")
+                val prayerTimesResponse = PrayerTimesResponse(
+                    code = 0,
+                    data = localData.map { it.toData() },
+                    status = "local data"
+                )
+                _prayerTimes.emit(Result.Success(prayerTimesResponse))
+            } else {
+                _prayerTimes.emit(Result.Error("No local data available"))
+            }
         }
     }
 

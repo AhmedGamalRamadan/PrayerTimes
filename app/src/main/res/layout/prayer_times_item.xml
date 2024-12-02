@@ -18,7 +18,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -42,11 +42,11 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_margin="5dp"
-            android:background="@color/black" />
+            android:background="@color/white" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -71,11 +71,11 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_margin="5dp"
-            android:background="@color/black" />
+            android:background="@color/white" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -100,11 +100,11 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_margin="5dp"
-            android:background="@color/black" />
+            android:background="@color/white" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -129,11 +129,11 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_margin="5dp"
-            android:background="@color/black" />
+            android:background="@color/white" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -158,11 +158,11 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_margin="5dp"
-            android:background="@color/black" />
+            android:background="@color/white" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
