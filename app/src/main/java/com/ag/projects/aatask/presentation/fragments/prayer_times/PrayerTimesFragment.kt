@@ -41,7 +41,7 @@ class PrayerTimesFragment : Fragment() {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<Array<String>>
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var currentPosition = 0
+    private var currentPosition = Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1
     private var latitude = 0.0
     private var longitude = 0.0
 
@@ -70,7 +70,6 @@ class PrayerTimesFragment : Fragment() {
 
         getUserLocation()
         fetchLocalData()
-
     }
 
     private fun initBinding() {
@@ -110,7 +109,9 @@ class PrayerTimesFragment : Fragment() {
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
 
-                currentPosition = firstVisibleItem
+                if (firstVisibleItem != 0) {
+                    currentPosition = firstVisibleItem
+                }
                 observePrayerTimes()
             }
         })
@@ -197,41 +198,42 @@ class PrayerTimesFragment : Fragment() {
             return
         }
 
-         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
 
-             location?.let {
-                 latitude = location.latitude
-                 longitude = location.longitude
+            location?.let {
+                latitude = location.latitude
+                longitude = location.longitude
 
-                 val userLocation =
-                     getAddressFromLatLng(
-                         requireContext(),
-                         location.latitude,
-                         location.longitude
-                     )
+                val userLocation =
+                    getAddressFromLatLng(
+                        requireContext(),
+                        location.latitude,
+                        location.longitude
+                    )
 
-                 binding.tvUserLocation.text = userLocation
+                binding.tvUserLocation.text = userLocation
 
-                 getPrayerTimes()
-             }
-         }.addOnFailureListener {
-             Toast.makeText(
-                 requireContext(),
-                 getString(R.string.can_not_get_location),
-                 Toast.LENGTH_SHORT
-             ).show()
-             Log.d("prayer fragment location is ", "failure $it")
-             return@addOnFailureListener
-         }.addOnCanceledListener {
-             Toast.makeText(
-                 requireContext(),
-                 getString(R.string.can_not_get_location),
-                 Toast.LENGTH_SHORT
-             ).show()
-             Log.d("prayer fragment location is ", "Canceled")
-             return@addOnCanceledListener
-         }
+                getPrayerTimes()
+            }
+        }.addOnFailureListener {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.can_not_get_location),
+                Toast.LENGTH_SHORT
+            ).show()
+            Log.d("prayer fragment location is ", "failure $it")
+            return@addOnFailureListener
+        }.addOnCanceledListener {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.can_not_get_location),
+                Toast.LENGTH_SHORT
+            ).show()
+            Log.d("prayer fragment location is ", "Canceled")
+            return@addOnCanceledListener
+        }
     }
+
     private fun fetchLocalData() {
         lifecycleScope.launch {
             if (viewModel.localDataExist()) {
@@ -283,6 +285,7 @@ class PrayerTimesFragment : Fragment() {
 
                         prayerTimesListSize = prayerDataList.size
                         val currentDay = prayerDataList[currentPosition]
+
                         binding.tvDate.text = currentDay.date?.readable
 
                         // Get cleaned prayer timings
