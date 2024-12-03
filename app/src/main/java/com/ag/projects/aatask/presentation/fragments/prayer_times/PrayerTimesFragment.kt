@@ -260,6 +260,7 @@ class PrayerTimesFragment : Fragment() {
     }
 
     private fun observePrayerTimes() {
+
         Log.d("InsertPrayerTimesUseCase", "enter observer from fragment")
 
         lifecycleScope.launch {
