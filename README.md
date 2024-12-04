@@ -61,7 +61,7 @@ The **Prayer Times App** is an Android application that provides accurate prayer
 ---
 
 ## Demo
-https://github.com/user-attachments/assets/72e45a98-69da-4ee8-a4e7-c8beee44f56d
+https://github.com/user-attachments/assets/03a0f040-73a5-4aea-a749-52266ea40feb
 
 ---
 
@@ -69,11 +69,13 @@ https://github.com/user-attachments/assets/72e45a98-69da-4ee8-a4e7-c8beee44f56d
 ## Screenshots
 <table>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/a800db32-b953-413a-bcbd-d4ce76c194a5" alt="splash" width="230"></td>
-     <td><img src="https://github.com/user-attachments/assets/191c8876-aa44-4d98-89db-c421b57ab6f7" alt="splash" width="230"></td>
-     <td><img src="https://github.com/user-attachments/assets/645f1b4e-764a-4ef6-9a27-26a90b956c02" alt="splash" width="230"></td>
+    <td><img src="https://github.com/user-attachments/assets/a800db32-b953-413a-bcbd-d4ce76c194a5" alt="splash" width="240"></td>
+     <td><img src="https://github.com/user-attachments/assets/191c8876-aa44-4d98-89db-c421b57ab6f7" alt="splash" width="240"></td>
+     <td><img src="https://github.com/user-attachments/assets/645f1b4e-764a-4ef6-9a27-26a90b956c02" alt="splash" width="240"></td>
   </tr>
 </table>
+
+
 
 ## 📝 Installation
 
